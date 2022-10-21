@@ -21,7 +21,7 @@ export default function Home() {
     async function buscarAlunos(){
 
 
-     await firebase.database().ref('Alunos/1').on('value',(snapshot) =>{
+     await firebase.database().ref('Alunos/4').on('value',(snapshot) =>{
 
       setAlunos(snapshot.val().Nome);
       setNota1(snapshot.val().Nota1);
