@@ -3,32 +3,34 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View ,FlatList,Image,TouchableOpacity} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import firebase from '../../firebase/firebaseConnection'
+import { Children } from 'react';
 
 export default function Home() {
-    // const navigation = useNavigation();
-  const [alunos,setAlunos] = useState([]);
-  const [nota1,setNota1] = useState([]);
-  const [nota2,setNota2] = useState([]);
-  const [nota3,setNota3] = useState([]);
 
-//   function irDetalhes(name,n1,n2,n3,img){
-//     navigation.navigate("Detalhes",{nome:name,nota1:n1,nota2:n2,nota3:n3,imagem:img})
-//  }
+  const [alunos,setAlunos] = useState([]);
+
 
   useEffect(()=>{
-
 
     async function buscarAlunos(){
 
 
-     await firebase.database().ref('Alunos/4').on('value',(snapshot) =>{
+     await firebase.database().ref('Alunos').on('value',(snapshot) =>{
 
-      setAlunos(snapshot.val().Nome);
-      setNota1(snapshot.val().Nota1);
-      setNota2(snapshot.val().Nota2);
-      setNota3(snapshot.val().Nota3);
-  
+      setAlunos([]);
+      snapshot.forEach( (ChildItem) =>{
+        let data = {
+          key : ChildItem.key,  
+          nome : ChildItem.val().Nome,
+          nota1 : ChildItem.val().Nota1,
+          nota2 : ChildItem.val().Nota2,
+          nota3 : ChildItem.val().Nota3,
+          imagem : ChildItem.val().Imagem
+        }
+        setAlunos(alunos => [...alunos,data]);
       })
+  
+    })
      
 
     }
@@ -44,11 +46,12 @@ export default function Home() {
       <Text style={{fontSize:30,fontWeight:'bold',}}> LISTA DE ALUNOS  </Text>
 
 
-      <Text>{alunos}</Text>
-      <Text>{nota1}</Text>
-      <Text>{nota2}</Text>
-      <Text>{nota3}</Text>
-
+      <FlatList
+      data = {alunos}
+      numColumns = {2}
+      keyExtractor = { (item) => item.key}
+      renderItem = { ( ({item}) => <Text> {item.nome} </Text>)}
+      />
 
 
 
